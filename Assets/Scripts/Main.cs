@@ -1,18 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class main : MonoBehaviour
+public class Main : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Button btnHost;
+    public Button btnJoin;
+    public Button btnQuit;
+
+    public void Start()
     {
-        
+        btnHost.onClick.AddListener(StartHost);
+        btnJoin.onClick.AddListener(JoinGame);
+        btnQuit.onClick.AddListener(QuitGame);
     }
 
-    // Update is called once per frame
-    void Update()
+    void StartHost()
     {
-        
+        NetworkManager.Singleton.StartHost();
+        NetworkManager.SceneManager.LoadScene(
+            "Alley",
+            UnityEngine.SceneManagement.LoadSceneMode.Single
+        );
+    }
+
+    void JoinGame()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Join_Menu");
+    }
+
+    void QuitGame()
+    {
+        Application.Quit();
     }
 }
