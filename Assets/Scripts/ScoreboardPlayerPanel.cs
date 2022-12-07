@@ -51,7 +51,6 @@ public class ScoreboardPlayerPanel : MonoBehaviour
 
     private void OnKickPlayerClicked()
     {
-        Debug.Log($"Panel for {txtName.text} kick button pressed");
         OnVoteKickPlayer.Invoke();
     }
 

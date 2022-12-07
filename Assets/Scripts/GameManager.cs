@@ -5,22 +5,30 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
+    [SerializeField]
+    private VoteKick UIHolder;
+
+    [SerializeField]
+    private Scoreboard _scoreBoard;
     private NetworkVariable<int> frameCounter = new NetworkVariable<int>(1);
 
     private NetworkVariable<bool> isGameStarted = new NetworkVariable<bool>(false);
 
-    public NetworkList<PlayerPanelStruct> playerPanels = new NetworkList<PlayerPanelStruct>();
+    // I don't believe this scoreboardPanels list serves a purpose anymore but im too scared to remove it
+    private List<ScoreboardPlayerPanel> scoreboardPanels;
+
+    public NetworkList<PlayerPanelStruct> playerPanels;
 
     public List<Transform> pinLocations;
 
     public GameObject pinPrefab;
 
-    [SerializeField]
-    private Scoreboard _scoreBoard;
-
-    private List<ScoreboardPlayerPanel> scoreboardPanels;
-
     public ScoreboardPlayerPanel playerPanel;
+
+    public void Awake()
+    {
+        playerPanels = new NetworkList<PlayerPanelStruct>();
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -28,7 +36,7 @@ public class GameManager : NetworkBehaviour
         {
             scoreboardPanels = new List<ScoreboardPlayerPanel>();
             SpawnPinsServerRpc();
-            // Host doesn't count as a connected client so must manually call methods for add and refresh
+            // Host already connected before subscribing to event so must call add and refresh manually
             AddPlayerToList(OwnerClientId);
             RefreshPlayerPanels();
             NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToList;
@@ -38,9 +46,19 @@ public class GameManager : NetworkBehaviour
         else
         {
             scoreboardPanels = new List<ScoreboardPlayerPanel>();
+            NetworkManager.Singleton.OnClientDisconnectCallback += ClientDisconnected;
         }
 
         playerPanels.OnListChanged += ClientOnAllPlayersChanged;
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= ClientDisconnected;
+        }
     }
 
     private void AddPlayerToList(ulong clientId)
@@ -88,16 +106,31 @@ public class GameManager : NetworkBehaviour
 
     void OnVoteKickPressed(ulong clientId)
     {
-        InitiateVoteKickClientRpc(clientId);
+        InitiateVoteKickServerRpc(clientId, playerPanels.Count);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void InitiateVoteKickServerRpc(ulong clientId, int numPlayers)
+    {
+        InitiateVoteKickClientRpc(clientId, playerPanels.Count);
     }
 
     [ClientRpc]
-    void InitiateVoteKickClientRpc(ulong clientId)
+    void InitiateVoteKickClientRpc(ulong clientId, int numPlayers)
     {
+        // Need to disable starting new vote if one is already in progress
         Debug.Log($"Vote to kick {clientId} started ");
+        UIHolder.StartNewVote(clientId, numPlayers);
     }
 
-    void OnClientDisconnect(ulong clientId)
+    void ClientDisconnected(ulong clientId)
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main_Menu");
+    }
+
+    public void OnClientDisconnect(ulong clientId)
     {
         int indexToRemove = -1;
         for (int i = 0; i < scoreboardPanels.Count; i++)

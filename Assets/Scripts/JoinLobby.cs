@@ -77,4 +77,13 @@ public class JoinLobby : NetworkBehaviour
         portInput.enabled = false;
         return true;
     }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnect;
+        }
+    }
 }

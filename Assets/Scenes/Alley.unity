@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 122927500}
   - component: {fileID: 122927504}
   - component: {fileID: 122927505}
+  - component: {fileID: 122927506}
   m_Layer: 5
   m_Name: UIHolder
   m_TagString: Untagged
@@ -290,6 +291,24 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &122927506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122927499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dbe69ad802c9fb47bb8e3b7fd3924d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btnVoteYes: {fileID: 479640781}
+  btnVoteNo: {fileID: 479640780}
+  txtPlayerToKick: {fileID: 479640779}
+  txtVotesNeeded: {fileID: 479640778}
+  kickUI: {fileID: 479640777}
+  gameManager: {fileID: 1755026782}
 --- !u!1 &133874092
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +715,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 122927503}
     m_Modifications:
+    - target: {fileID: 1134990393197967978, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+      propertyPath: m_Name
+      value: lblVotesNeeded
+      objectReference: {fileID: 0}
+    - target: {fileID: 3743769237852025666, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+      propertyPath: m_Name
+      value: lblPlayerToKick
+      objectReference: {fileID: 0}
     - target: {fileID: 6611831014481205004, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
       propertyPath: m_Name
       value: kickUI
@@ -795,6 +822,55 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8398192120627869203, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
   m_PrefabInstance: {fileID: 479640775}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &479640777 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6611831014481205004, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+  m_PrefabInstance: {fileID: 479640775}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &479640778 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5299878883194107518, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+  m_PrefabInstance: {fileID: 479640775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &479640779 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9149959021093430100, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+  m_PrefabInstance: {fileID: 479640775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &479640780 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2630051933244470350, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+  m_PrefabInstance: {fileID: 479640775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &479640781 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6013236423912908873, guid: 6a220e6a78956ac42a2d6eed4be73a4a, type: 3}
+  m_PrefabInstance: {fileID: 479640775}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2462,6 +2538,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3a0789febdb8264d897ce6a4351b72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIHolder: {fileID: 122927506}
+  _scoreBoard: {fileID: 1717344325}
   pinLocations:
   - {fileID: 1304381427}
   - {fileID: 1822522356}
@@ -2474,7 +2552,6 @@ MonoBehaviour:
   - {fileID: 206893267}
   - {fileID: 1959231861}
   pinPrefab: {fileID: 6320176716234117666, guid: 46a235c96732afe47b0ca94ac71ef96e, type: 3}
-  _scoreBoard: {fileID: 1717344325}
   playerPanel: {fileID: -2827815540362510551, guid: 5220255efc774fd4eab6b582c3ba875f, type: 3}
 --- !u!114 &1755026783
 MonoBehaviour:
