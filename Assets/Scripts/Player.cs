@@ -5,14 +5,19 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour
 {
+    public NetworkVariable<bool> hasBall = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> isTurn = new NetworkVariable<bool>(false);
+
     // generic controls
     private Camera _camera;
 
-    public float movementSpeed = 2f;
+    public float movementSpeed = 3f;
     public float rotationSpeed = 100f;
 
     private float mouseXPos;
     private float mouseYPos;
+
+    private BallSpawner ballSpawner;
 
     void Start()
     {
@@ -30,12 +35,26 @@ public class Player : NetworkBehaviour
         Vector3[] results = CalcMovement();
         transform.position += results[0];
         transform.rotation = Quaternion.Euler(results[1]);
+        if (hasBall.Value)
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                ThrowBall();
+            }
+        }
+    }
+
+    void ThrowBall()
+    {
+        ballSpawner.ThrowBallServerRpc();
+        hasBall.Value = false;
     }
 
     public override void OnNetworkSpawn()
     {
         _camera = transform.Find("Camera").GetComponent<Camera>();
         _camera.enabled = IsOwner;
+        ballSpawner = transform.GetComponent<BallSpawner>();
     }
 
     private Vector3[] CalcMovement()
@@ -66,8 +85,12 @@ public class Player : NetworkBehaviour
         }
         if (other.gameObject.CompareTag("Interactable"))
         {
-            BallSpawner spawn = other.gameObject.GetComponent<BallSpawner>();
-            spawn.SpawnBallServerRpc();
+            if (hasBall.Value)
+            {
+                return;
+            }
+            ballSpawner.SpawnBallServerRpc();
+            hasBall.Value = true;
         }
     }
 }

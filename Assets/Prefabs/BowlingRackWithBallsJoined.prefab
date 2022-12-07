@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7860295180787248039}
   - component: {fileID: 5400264123031822189}
   - component: {fileID: 5376350486502172112}
-  - component: {fileID: 8067379719880338908}
   - component: {fileID: 3189549077581486160}
   - component: {fileID: -6567630241486992864}
   m_Layer: 0
@@ -106,19 +105,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.005535991, y: 0.024383998, z: 0.010978623}
   m_Center: {x: -0.0007359977, y: -6.140844e-19, z: 0.00015531182}
---- !u!114 &8067379719880338908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5904619246141750968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 732adb3b1a308d34a93b53ed7c13f93c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bowlingBall: {fileID: 1794495727651543646, guid: bd2b5da138e4a9147b371fa531a8185d, type: 3}
 --- !u!114 &3189549077581486160
 MonoBehaviour:
   m_ObjectHideFlags: 0
