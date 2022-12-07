@@ -23,6 +23,21 @@ public class BallSpawner : NetworkBehaviour
     }
 
     [ServerRpc]
+    public void ThrowBallFreePlayServerRpc()
+    {
+        if (heldBall != null)
+        {
+            heldBall.transform.localPosition = new Vector3(0, 0, 2);
+            heldBall.transform.parent = null;
+            heldBall.GetComponent<Rigidbody>().isKinematic = false;
+            heldBall.GetComponent<NetworkTransform>().InLocalSpace = false;
+            heldBall.AddForce(transform.forward * 500);
+            Destroy(heldBall.gameObject, 6);
+            heldBall = null;
+        }
+    }
+
+    [ServerRpc]
     public void ThrowBallServerRpc()
     {
         if (heldBall != null)
@@ -32,6 +47,8 @@ public class BallSpawner : NetworkBehaviour
             heldBall.GetComponent<Rigidbody>().isKinematic = false;
             heldBall.GetComponent<NetworkTransform>().InLocalSpace = false;
             heldBall.AddForce(transform.forward * 500);
+            // Sets ball to game interaction layer
+            heldBall.gameObject.layer = 3;
             Destroy(heldBall.gameObject, 6);
             heldBall = null;
         }

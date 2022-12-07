@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class StartGame : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private GameManager gameManager;
 
-    // Update is called once per frame
-    void Update()
+    public void CallStartGame()
     {
+        gameManager.StartGameServerRpc();
     }
 }

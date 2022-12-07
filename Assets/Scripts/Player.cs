@@ -33,7 +33,10 @@ public class Player : NetworkBehaviour
             return;
         }
         Vector3[] results = CalcMovement();
-        transform.position += results[0];
+        if (!isTurn.Value)
+        {
+            transform.position += results[0];
+        }
         transform.rotation = Quaternion.Euler(results[1]);
         if (hasBall.Value)
         {
@@ -46,7 +49,7 @@ public class Player : NetworkBehaviour
 
     void ThrowBall()
     {
-        ballSpawner.ThrowBallServerRpc();
+        ballSpawner.ThrowBallFreePlayServerRpc();
         SetHasBallServerRpc(false);
     }
 
@@ -79,19 +82,22 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!IsOwner)
+        if (!IsOwner || !other.gameObject.CompareTag("Interactable"))
         {
             return;
         }
-        if (other.gameObject.CompareTag("Interactable"))
+        if (IsHost && other.gameObject.layer == 6)
         {
-            if (hasBall.Value)
-            {
-                return;
-            }
-            ballSpawner.SpawnBallServerRpc();
-            SetHasBallServerRpc(true);
+            other.gameObject.GetComponent<StartGame>().CallStartGame();
+            return;
         }
+        if (hasBall.Value)
+        {
+            return;
+        }
+        ballSpawner.SpawnBallServerRpc();
+        SetHasBallServerRpc(true);
+        return;
     }
 
     [ServerRpc]

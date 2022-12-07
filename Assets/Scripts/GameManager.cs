@@ -10,6 +10,9 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField]
     private Scoreboard _scoreBoard;
+
+    [SerializeField]
+    private Transform bowlTransform;
     private NetworkVariable<int> frameCounter = new NetworkVariable<int>(1);
 
     private NetworkVariable<bool> isGameStarted = new NetworkVariable<bool>(false);
@@ -130,6 +133,45 @@ public class GameManager : NetworkBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene("Main_Menu");
     }
 
+    [ServerRpc]
+    public void StartGameServerRpc()
+    {
+        // For each frame loop
+        for (frameCounter.Value = 1; frameCounter.Value <= 10; frameCounter.Value++)
+        {
+            //For each players
+            foreach (PlayerPanelStruct player in playerPanels)
+            {
+                // Set bowl position
+                // Set their isTurn to true
+                SetPlayerForTurnServerRpc(player.clientId);
+                // spawn their pins
+                SpawnPinsServerRpc();
+                // give them a ball
+                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
+                    .GetComponent<BallSpawner>()
+                    .SpawnBallServerRpc();
+                // Throw ball give layer privledge
+                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
+                    .GetComponent<BallSpawner>()
+                    .ThrowBallServerRpc();
+                // Calulate score
+                // Update scoreboard
+            }
+        }
+        // Frames are finished
+        // Announce winner on canvas
+    }
+
+    [ServerRpc]
+    public void SetPlayerForTurnServerRpc(ulong clientId)
+    {
+        NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
+        currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
+        currentPlayer.PlayerObject.GetComponent<Transform>().position = bowlTransform.position;
+        currentPlayer.PlayerObject.GetComponent<Transform>().rotation = bowlTransform.rotation;
+    }
+
     public void OnClientDisconnect(ulong clientId)
     {
         int indexToRemove = -1;
@@ -172,27 +214,6 @@ public class GameManager : NetworkBehaviour
     private void RefreshPlayerPanels()
     {
         _scoreBoard.ResetScoreBoard();
-        // foreach (var player in scoreboardPanels)
-        // {
-        //     ScoreboardPlayerPanel newPanel = Instantiate(playerPanel);
-        //     newPanel.SetName(player.GetName());
-        //     newPanel.SetFrame1(player.GetFrame1());
-        //     newPanel.SetFrame2(player.GetFrame2());
-        //     newPanel.SetFrame3(player.GetFrame3());
-        //     newPanel.SetFrame4(player.GetFrame4());
-        //     newPanel.SetFrame5(player.GetFrame5());
-        //     newPanel.SetFrame6(player.GetFrame6());
-        //     newPanel.SetFrame7(player.GetFrame7());
-        //     newPanel.SetFrame8(player.GetFrame8());
-        //     newPanel.SetFrame9(player.GetFrame9());
-        //     newPanel.SetFrame10(player.GetFrame9());
-        //     newPanel.ShowKick(player.GetShowVoteKick());
-        //     newPanel.OnVoteKickPlayer += delegate
-        //     {
-        //         OnVoteKickPressed(ulong.Parse(player.GetName()));
-        //     };
-        //     _scoreBoard.AddPlayerToScoreboard(newPanel);
-        // }
         foreach (PlayerPanelStruct panel in playerPanels)
         {
             AddPlayerPanel(panel);
