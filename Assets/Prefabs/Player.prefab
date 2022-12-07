@@ -473,7 +473,7 @@ MonoBehaviour:
     m_InternalValue: 0
   isTurn:
     m_InternalValue: 0
-  movementSpeed: 2
+  movementSpeed: 3
   rotationSpeed: 100
 --- !u!114 &-6582284244190865530
 MonoBehaviour:

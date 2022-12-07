@@ -2297,6 +2297,7 @@ GameObject:
   - component: {fileID: 1717344322}
   - component: {fileID: 1717344321}
   - component: {fileID: 1717344325}
+  - component: {fileID: 1717344326}
   m_Layer: 5
   m_Name: scoreboardHolder
   m_TagString: Untagged
@@ -2399,7 +2400,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreboard: {fileID: 911246103}
-  playerPanel: {fileID: 762871741950680410, guid: 5220255efc774fd4eab6b582c3ba875f, type: 3}
+  playerPanel: {fileID: -2827815540362510551, guid: 5220255efc774fd4eab6b582c3ba875f, type: 3}
+--- !u!114 &1717344326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717344320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 57484530
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1755026780
 GameObject:
   m_ObjectHideFlags: 0
@@ -2457,6 +2474,8 @@ MonoBehaviour:
   - {fileID: 206893267}
   - {fileID: 1959231861}
   pinPrefab: {fileID: 6320176716234117666, guid: 46a235c96732afe47b0ca94ac71ef96e, type: 3}
+  _scoreBoard: {fileID: 1717344325}
+  playerPanel: {fileID: -2827815540362510551, guid: 5220255efc774fd4eab6b582c3ba875f, type: 3}
 --- !u!114 &1755026783
 MonoBehaviour:
   m_ObjectHideFlags: 0

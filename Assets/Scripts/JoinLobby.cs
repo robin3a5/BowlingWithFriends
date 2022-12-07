@@ -48,6 +48,8 @@ public class JoinLobby : NetworkBehaviour
     void Cancel()
     {
         SceneManager.LoadScene("Main_Menu");
+        btnCancel.onClick.RemoveAllListeners();
+        btnConnect.onClick.RemoveAllListeners();
     }
 
     private bool ValidateInput()

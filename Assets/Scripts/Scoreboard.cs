@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Scoreboard : MonoBehaviour
 {
     public GameObject scoreboard;
 
-    public GameObject playerPanel;
+    public ScoreboardPlayerPanel playerPanel;
 
     void Start()
     {
@@ -20,24 +21,32 @@ public class Scoreboard : MonoBehaviour
         {
             if (scoreboard.activeSelf)
             {
+                // hide scoreboard and cursor
                 scoreboard.SetActive(false);
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
             else
             {
+                // show scoreboard and cursor
                 scoreboard.SetActive(true);
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
-                AddPlayerToScoreboard();
             }
         }
     }
 
-    // Function to test panel population
-    void AddPlayerToScoreboard()
+    public void AddPlayerToScoreboard(ScoreboardPlayerPanel newPanel)
     {
-        GameObject newPanel = Instantiate(playerPanel);
         newPanel.transform.SetParent(scoreboard.transform);
+    }
+
+    public void ResetScoreBoard()
+    {
+        // Remove all nested panels
+        foreach (Transform child in scoreboard.transform)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
     }
 }

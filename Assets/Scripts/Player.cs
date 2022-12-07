@@ -47,7 +47,7 @@ public class Player : NetworkBehaviour
     void ThrowBall()
     {
         ballSpawner.ThrowBallServerRpc();
-        hasBall.Value = false;
+        SetHasBallServerRpc(false);
     }
 
     public override void OnNetworkSpawn()
@@ -90,7 +90,13 @@ public class Player : NetworkBehaviour
                 return;
             }
             ballSpawner.SpawnBallServerRpc();
-            hasBall.Value = true;
+            SetHasBallServerRpc(true);
         }
+    }
+
+    [ServerRpc]
+    public void SetHasBallServerRpc(bool value)
+    {
+        hasBall.Value = value;
     }
 }

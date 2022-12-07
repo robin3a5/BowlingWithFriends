@@ -113,7 +113,6 @@ public class ChatUI : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SendChatMessageServerRpc(string message, ServerRpcParams serverRpcParams = default)
     {
-        Debug.Log(serverRpcParams.Receive.SenderClientId);
         SendChatMessageClientRpc(message, serverRpcParams.Receive.SenderClientId);
     }
 
