@@ -139,6 +139,7 @@ public class GameManager : NetworkBehaviour
         // For each frame loop
         for (frameCounter.Value = 1; frameCounter.Value <= 10; frameCounter.Value++)
         {
+            
             //For each players
             foreach (PlayerPanelStruct player in playerPanels)
             {
@@ -157,10 +158,88 @@ public class GameManager : NetworkBehaviour
                     .ThrowBallServerRpc();
                 // Calulate score
                 // Update scoreboard
+                UpdatePlayerScore(player.clientId, 50);
+                //Reset isTurn so player can move
+                ResetIsTurnForClientServerRpc(player.clientId);
             }
         }
         // Frames are finished
         // Announce winner on canvas
+    }
+
+    private void UpdatePlayerScore(ulong clientId, int frameScore)
+    {
+        int updateIndex = -1;
+        for (int i = 0; i < playerPanels.Count; i++)
+        {
+            if (playerPanels[i].clientId == clientId)
+            {
+                updateIndex = i;
+            }
+        }
+        if (updateIndex != -1)
+        {
+            if (frameCounter.Value == 1)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame1 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 2)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame2 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 3)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame3 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 4)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame4 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 5)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame5 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 6)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame6 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 7)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame7 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 8)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame8 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 9)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame9 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+            else if (frameCounter.Value == 10)
+            {
+                PlayerPanelStruct tempStruct = playerPanels[updateIndex];
+                tempStruct.txtFrame10 = frameScore.ToString();
+                playerPanels[updateIndex] = tempStruct;
+            }
+        }
     }
 
     [ServerRpc]
@@ -170,6 +249,14 @@ public class GameManager : NetworkBehaviour
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
         currentPlayer.PlayerObject.GetComponent<Transform>().position = bowlTransform.position;
         currentPlayer.PlayerObject.GetComponent<Transform>().rotation = bowlTransform.rotation;
+    }
+
+    [ServerRpc]
+    public void ResetIsTurnForClientServerRpc(ulong clientId)
+    {
+        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject
+            .GetComponent<Player>()
+            .isTurn.Value = false;
     }
 
     public void OnClientDisconnect(ulong clientId)

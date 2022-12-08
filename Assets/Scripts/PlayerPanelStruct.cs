@@ -6,7 +6,6 @@ using UnityEngine;
 
 public struct PlayerPanelStruct : INetworkSerializable, System.IEquatable<PlayerPanelStruct>
 {
-    // Possibly could have been chars instead
     public ulong clientId;
     public bool showVoteKick;
     public FixedString32Bytes txtFrame1;

@@ -37,7 +37,7 @@ public class BallSpawner : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void ThrowBallServerRpc()
     {
         if (heldBall != null)
