@@ -22,6 +22,7 @@ public class BallSpawner : NetworkBehaviour
         heldBall.GetComponent<NetworkTransform>().InLocalSpace = true;
     }
 
+    // Allows player to throw balls without interacting with player pins
     [ServerRpc]
     public void ThrowBallFreePlayServerRpc()
     {

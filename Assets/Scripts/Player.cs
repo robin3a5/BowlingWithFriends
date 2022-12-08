@@ -7,6 +7,7 @@ public class Player : NetworkBehaviour
 {
     public NetworkVariable<bool> hasBall = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isTurn = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>(false);
 
     // generic controls
     private Camera _camera;
@@ -86,8 +87,9 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-        if (IsHost && other.gameObject.layer == 6)
+        if (IsHost && other.gameObject.layer == 6 && !gameStarted.Value)
         {
+            SetGameStartedServerRpc(true);
             other.gameObject.GetComponent<StartGame>().CallStartGame();
             return;
         }
@@ -104,5 +106,11 @@ public class Player : NetworkBehaviour
     public void SetHasBallServerRpc(bool value)
     {
         hasBall.Value = value;
+    }
+
+    [ServerRpc]
+    public void SetGameStartedServerRpc(bool value)
+    {
+        gameStarted.Value = value;
     }
 }
