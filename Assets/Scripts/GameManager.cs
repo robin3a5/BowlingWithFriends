@@ -68,12 +68,12 @@ public class GameManager : NetworkBehaviour
                 SetPlayerForTurnServerRpc(player.clientId);
                 // spawn their pins
                 SpawnPinsServerRpc();
-                yield return new WaitForSeconds(timePerTurn);
-                // give them a ball
+                // give player a ball
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
                     .SpawnBallServerRpc();
-                // Throw ball give layer privledge
+                yield return new WaitForSeconds(timePerTurn);
+                // Throw ball with layer privledge
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
                     .ThrowBallServerRpc();
@@ -261,6 +261,7 @@ public class GameManager : NetworkBehaviour
     {
         NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
+        // Erorr: Won't set position of client, not sure why
         currentPlayer.PlayerObject
             .GetComponent<Transform>()
             .SetPositionAndRotation(bowlTransform.position, bowlTransform.rotation);

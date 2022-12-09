@@ -121,6 +121,7 @@ public class Player : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     void UpdatePositionOnSpawnServerRpc(Vector3 updatePosition, Quaternion updateRoation)
     {
+        // Error: Teleports host to start everytime player joins
         transform.SetPositionAndRotation(updatePosition, updateRoation);
     }
 }
