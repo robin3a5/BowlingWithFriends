@@ -56,6 +56,10 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        UpdatePositionOnSpawnServerRpc(
+            new Vector3(14.21f, 0.97f, -10.9f),
+            new Quaternion(0, 0, 0, 0)
+        );
         _camera = transform.Find("Camera").GetComponent<Camera>();
         _camera.enabled = IsOwner;
         ballSpawner = transform.GetComponent<BallSpawner>();
@@ -112,5 +116,11 @@ public class Player : NetworkBehaviour
     public void SetGameStartedServerRpc(bool value)
     {
         gameStarted.Value = value;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void UpdatePositionOnSpawnServerRpc(Vector3 updatePosition, Quaternion updateRoation)
+    {
+        transform.SetPositionAndRotation(updatePosition, updateRoation);
     }
 }

@@ -28,6 +28,8 @@ public class GameManager : NetworkBehaviour
 
     public ScoreboardPlayerPanel playerPanel;
 
+    private int timePerTurn = 3;
+
     public void Awake()
     {
         playerPanels = new NetworkList<PlayerPanelStruct>();
@@ -44,15 +46,54 @@ public class GameManager : NetworkBehaviour
             RefreshPlayerPanels();
             NetworkManager.Singleton.OnClientConnectedCallback += AddPlayerToList;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
-            // SpawnPlayers();
+            playerPanels.OnListChanged += ClientOnAllPlayersChanged;
         }
         else
         {
             scoreboardPanels = new List<ScoreboardPlayerPanel>();
             NetworkManager.Singleton.OnClientDisconnectCallback += ClientDisconnected;
+            playerPanels.OnListChanged += ClientOnAllPlayersChanged;
+        }
+    }
+
+    IEnumerator GameplayLoop()
+    {
+        for (frameCounter.Value = 1; frameCounter.Value <= 10; frameCounter.Value++)
+        {
+            // For each players
+            foreach (PlayerPanelStruct player in playerPanels)
+            {
+                // Set bowl position
+                // Set their isTurn to true
+                SetPlayerForTurnServerRpc(player.clientId);
+                // spawn their pins
+                SpawnPinsServerRpc();
+                yield return new WaitForSeconds(timePerTurn);
+                // give them a ball
+                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
+                    .GetComponent<BallSpawner>()
+                    .SpawnBallServerRpc();
+                // Throw ball give layer privledge
+                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
+                    .GetComponent<BallSpawner>()
+                    .ThrowBallServerRpc();
+                // Calulate score
+                // Update scoreboard
+                UpdatePlayerScore(player.clientId, 50);
+                //Reset isTurn so player can move
+                ResetIsTurnForClientServerRpc(player.clientId);
+            }
+        }
+        // Frames are finished
+        // Reset gameStarted variable
+        for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++)
+        {
+            NetworkManager.Singleton.ConnectedClientsList[i].PlayerObject
+                .GetComponent<Player>()
+                .SetGameStartedServerRpc(false);
         }
 
-        playerPanels.OnListChanged += ClientOnAllPlayersChanged;
+        // Announce winner on canvas
     }
 
     public override void OnDestroy()
@@ -136,35 +177,8 @@ public class GameManager : NetworkBehaviour
     [ServerRpc]
     public void StartGameServerRpc()
     {
-        // For each frame loop
-        for (frameCounter.Value = 1; frameCounter.Value <= 10; frameCounter.Value++)
-        {
-            
-            //For each players
-            foreach (PlayerPanelStruct player in playerPanels)
-            {
-                // Set bowl position
-                // Set their isTurn to true
-                SetPlayerForTurnServerRpc(player.clientId);
-                // spawn their pins
-                SpawnPinsServerRpc();
-                // give them a ball
-                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
-                    .GetComponent<BallSpawner>()
-                    .SpawnBallServerRpc();
-                // Throw ball give layer privledge
-                NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
-                    .GetComponent<BallSpawner>()
-                    .ThrowBallServerRpc();
-                // Calulate score
-                // Update scoreboard
-                UpdatePlayerScore(player.clientId, 50);
-                //Reset isTurn so player can move
-                ResetIsTurnForClientServerRpc(player.clientId);
-            }
-        }
-        // Frames are finished
-        // Announce winner on canvas
+        // TODO: Blank out scoreboard scores
+        StartCoroutine(GameplayLoop());
     }
 
     private void UpdatePlayerScore(ulong clientId, int frameScore)
@@ -247,8 +261,9 @@ public class GameManager : NetworkBehaviour
     {
         NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
-        currentPlayer.PlayerObject.GetComponent<Transform>().position = bowlTransform.position;
-        currentPlayer.PlayerObject.GetComponent<Transform>().rotation = bowlTransform.rotation;
+        currentPlayer.PlayerObject
+            .GetComponent<Transform>()
+            .SetPositionAndRotation(bowlTransform.position, bowlTransform.rotation);
     }
 
     [ServerRpc]
@@ -314,6 +329,17 @@ public class GameManager : NetworkBehaviour
         {
             GameObject pinToSpawn = Instantiate(pinPrefab, pin.position, pin.rotation);
             pinToSpawn.gameObject.GetComponent<NetworkObject>().Spawn(true);
+            pinToSpawn.gameObject.AddComponent<Pin>();
+            Destroy(pinToSpawn, timePerTurn);
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void UpdatePositionOnSpawnServerRpc(Vector3 updatePosition, Quaternion updateRoation)
+    {
+        Debug.Log(NetworkManager.Singleton.LocalClientId);
+        NetworkManager.Singleton.ConnectedClients[NetworkManager.LocalClientId].PlayerObject
+            .GetComponent<Transform>()
+            .SetPositionAndRotation(updatePosition, updateRoation);
     }
 }
