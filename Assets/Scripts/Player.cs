@@ -5,9 +5,11 @@ using Unity.Netcode;
 
 public class Player : NetworkBehaviour
 {
+    public GameObject gameOverCanvas;
     public NetworkVariable<bool> hasBall = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> isTurn = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>(false);
+    public NetworkVariable<bool> gameOverShown = new NetworkVariable<bool>(false);
 
     // generic controls
     private Camera _camera;
@@ -25,6 +27,7 @@ public class Player : NetworkBehaviour
         // Hide cursor on intital load
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        gameOverCanvas.SetActive(false);
     }
 
     void Update()
@@ -57,6 +60,7 @@ public class Player : NetworkBehaviour
         _camera = transform.Find("Camera").GetComponent<Camera>();
         _camera.enabled = IsOwner;
         ballSpawner = transform.GetComponent<BallSpawner>();
+        gameOverShown.OnValueChanged += OnGameOverChangeEvent;
     }
 
     Vector3[] CalcMovement()
@@ -106,7 +110,18 @@ public class Player : NetworkBehaviour
         SetHasBallServerRpc(false);
     }
 
+    void OnGameOverChangeEvent(bool previous, bool current)
+    {
+        gameOverCanvas.SetActive(current);
+    }
+
     [ServerRpc]
+    public void SetGameOverShownServerRpc(bool value)
+    {
+        gameOverShown.Value = value;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     public void SetGameStartedServerRpc(bool value)
     {
         gameStarted.Value = value;

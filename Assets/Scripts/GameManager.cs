@@ -28,7 +28,7 @@ public class GameManager : NetworkBehaviour
 
     public ScoreboardPlayerPanel playerPanel;
 
-    private int timePerTurn = 3;
+    private int timePerTurn = 4;
 
     public void Awake()
     {
@@ -63,9 +63,17 @@ public class GameManager : NetworkBehaviour
             // For each players
             foreach (PlayerPanelStruct player in playerPanels)
             {
-                // Set bowl position
                 // Set their isTurn to true
-                SetPlayerForTurnServerRpc(player.clientId);
+                SetPlayerIsTurnServerRpc(player.clientId);
+                ClientRpcParams clientRpcParams = new ClientRpcParams
+                {
+                    Send = new ClientRpcSendParams
+                    {
+                        TargetClientIds = new ulong[] { player.clientId }
+                    }
+                };
+                // Send message to individual client to get into position
+                SetPlayerPositionClientRpc(player.clientId, clientRpcParams);
                 // spawn their pins
                 SpawnPinsServerRpc();
                 // give player a ball
@@ -84,16 +92,27 @@ public class GameManager : NetworkBehaviour
                 ResetIsTurnForClientServerRpc(player.clientId);
             }
         }
-        // Frames are finished
         // Reset gameStarted variable
-        for (int i = 0; i < NetworkManager.Singleton.ConnectedClientsList.Count; i++)
-        {
-            NetworkManager.Singleton.ConnectedClientsList[i].PlayerObject
-                .GetComponent<Player>()
-                .SetGameStartedServerRpc(false);
-        }
+        NetworkManager.LocalClient.PlayerObject
+            .GetComponent<Player>()
+            .SetGameStartedServerRpc(false);
+        // Set game over screen
+        yield return GameOver();
+    }
 
-        // Announce winner on canvas
+    IEnumerator GameOver()
+    {
+        SetGameOverScreenClientRpc(true);
+        yield return new WaitForSeconds(5);
+        SetGameOverScreenClientRpc(false);
+    }
+
+    [ClientRpc]
+    void SetGameOverScreenClientRpc(bool option)
+    {
+        NetworkManager.LocalClient.PlayerObject
+            .GetComponent<Player>()
+            .SetGameOverShownServerRpc(option);
     }
 
     public override void OnDestroy()
@@ -306,12 +325,17 @@ public class GameManager : NetworkBehaviour
     }
 
     [ServerRpc]
-    void SetPlayerForTurnServerRpc(ulong clientId)
+    void SetPlayerIsTurnServerRpc(ulong clientId)
     {
         NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
-        // Erorr: Won't set position of client, not sure why
-        currentPlayer.PlayerObject
+    }
+
+    [ClientRpc]
+    void SetPlayerPositionClientRpc(ulong clientId, ClientRpcParams clientRpcParams = default)
+    {
+        NetworkManager.LocalClient.PlayerObject
+            .GetComponent<Player>()
             .GetComponent<Transform>()
             .SetPositionAndRotation(bowlTransform.position, bowlTransform.rotation);
     }
