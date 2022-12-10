@@ -355,7 +355,22 @@ public class GameManager : NetworkBehaviour
     [ServerRpc]
     public void StartGameServerRpc()
     {
-        // TODO: Blank out scoreboard scores
+        //Blanks out scoreboard scores
+        for (int i = 0; i < playerPanels.Count; i++)
+        {
+            PlayerPanelStruct tempStruct = playerPanels[i];
+            tempStruct.txtFrame1 = "";
+            tempStruct.txtFrame2 = "";
+            tempStruct.txtFrame3 = "";
+            tempStruct.txtFrame4 = "";
+            tempStruct.txtFrame5 = "";
+            tempStruct.txtFrame6 = "";
+            tempStruct.txtFrame7 = "";
+            tempStruct.txtFrame8 = "";
+            tempStruct.txtFrame9 = "";
+            tempStruct.txtFrame10 = "";
+            playerPanels[i] = tempStruct;
+        }
         StartCoroutine(GameplayLoop());
     }
 }
