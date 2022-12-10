@@ -835,7 +835,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1526430875}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
 --- !u!1001 &208762660
 PrefabInstance:
@@ -3386,37 +3386,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 92369271047743283, guid: c4d3db9fc3516c54ebd183455eb46a74, type: 3}
   m_PrefabInstance: {fileID: 1018295131}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1022525676
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1022525677}
-  m_Layer: 0
-  m_Name: PinLocation (6)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1022525677
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1022525676}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: -13.47502, y: -0, z: 1.157}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1526430875}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
 --- !u!1 &1038885991
 GameObject:
   m_ObjectHideFlags: 0
@@ -3446,7 +3415,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1526430875}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
 --- !u!1001 &1197884334
 PrefabInstance:
@@ -3889,6 +3858,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1526430875}
+  - component: {fileID: 1526430876}
+  - component: {fileID: 1526430877}
   m_Layer: 0
   m_Name: PinsHolder
   m_TagString: Untagged
@@ -3914,13 +3885,42 @@ Transform:
   - {fileID: 60558978}
   - {fileID: 1603257868}
   - {fileID: 1962310184}
-  - {fileID: 1022525677}
   - {fileID: 1038885992}
   - {fileID: 206893267}
   - {fileID: 1959231861}
+  - {fileID: 2048584403}
   m_Father: {fileID: 270527171}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1526430876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526430874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 575e13f12cc596047bec425d316633b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 1755026782}
+--- !u!114 &1526430877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526430874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 4043200296
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1536897892
 GameObject:
   m_ObjectHideFlags: 0
@@ -4836,6 +4836,7 @@ MonoBehaviour:
   UIHolder: {fileID: 122927506}
   _scoreBoard: {fileID: 1717344325}
   bowlTransform: {fileID: 348804091}
+  pinHolder: {fileID: 1526430875}
   pinLocations:
   - {fileID: 1304381427}
   - {fileID: 1822522356}
@@ -4843,7 +4844,7 @@ MonoBehaviour:
   - {fileID: 60558978}
   - {fileID: 1603257868}
   - {fileID: 1962310184}
-  - {fileID: 1022525677}
+  - {fileID: 2048584403}
   - {fileID: 1038885992}
   - {fileID: 206893267}
   - {fileID: 1959231861}
@@ -5512,7 +5513,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1526430875}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
 --- !u!1 &1962310183
 GameObject:
@@ -5691,6 +5692,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2048584402
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2048584403}
+  m_Layer: 0
+  m_Name: PinLocation (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2048584403
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048584402}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: -13.47502, y: -0, z: 1.176}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1526430875}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
 --- !u!1 &2068528567
 GameObject:
   m_ObjectHideFlags: 0

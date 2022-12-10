@@ -11,7 +11,7 @@ public class BallSpawner : NetworkBehaviour
     private Rigidbody heldBall;
     public Rigidbody bowlingBall;
 
-    public int throwSpeed = 5;
+    private int throwSpeed = 15;
 
     [ServerRpc(RequireOwnership = false)]
     public void SpawnBallServerRpc(ServerRpcParams rpcParams = default)
@@ -42,15 +42,15 @@ public class BallSpawner : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void ThrowBallServerRpc()
+    public void ThrowBallServerRpc(int bowlSpeed)
     {
         if (heldBall != null)
         {
-            heldBall.transform.localPosition = new Vector3(0, 0, 2);
+            // heldBall.transform.localPosition = new Vector3(0, 0, 2);
             heldBall.transform.parent = null;
             heldBall.GetComponent<Rigidbody>().isKinematic = false;
             heldBall.GetComponent<NetworkTransform>().InLocalSpace = false;
-            heldBall.velocity = transform.forward * throwSpeed;
+            heldBall.velocity = transform.forward * bowlSpeed;
             // Sets ball to game interaction layer
             heldBall.gameObject.layer = 3;
             Destroy(heldBall.gameObject, 6);

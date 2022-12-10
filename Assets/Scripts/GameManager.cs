@@ -13,9 +13,14 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField]
     private Transform bowlTransform;
+
+    [SerializeField]
+    private Transform pinHolder;
     private NetworkVariable<int> frameCounter = new NetworkVariable<int>(1);
 
     private NetworkVariable<bool> isGameStarted = new NetworkVariable<bool>(false);
+
+    private NetworkVariable<int> pinCount = new NetworkVariable<int>(0);
 
     // I don't believe this scoreboardPanels list serves a purpose anymore but im too scared to remove it
     private List<ScoreboardPlayerPanel> scoreboardPanels;
@@ -28,7 +33,9 @@ public class GameManager : NetworkBehaviour
 
     public ScoreboardPlayerPanel playerPanel;
 
-    private int timePerTurn = 4;
+    private int timePerTurn = 10;
+
+    private Vector3 spawnVector = new Vector3(14.21f, 0.97f, -10.9f);
 
     public void Awake()
     {
@@ -73,23 +80,38 @@ public class GameManager : NetworkBehaviour
                     }
                 };
                 // Send message to individual client to get into position
-                SetPlayerPositionClientRpc(player.clientId, clientRpcParams);
+                SetPlayerPositionClientRpc(
+                    bowlTransform.position,
+                    bowlTransform.rotation,
+                    player.clientId,
+                    clientRpcParams
+                );
                 // spawn their pins
                 SpawnPinsServerRpc();
                 // give player a ball
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
                     .SpawnBallServerRpc();
-                yield return new WaitForSeconds(timePerTurn);
                 // Throw ball with layer privledge
+                yield return new WaitForSeconds(1);
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
-                    .ThrowBallServerRpc();
-                // Calulate score
-                // Update scoreboard
-                UpdatePlayerScore(player.clientId, 50);
-                //Reset isTurn so player can move
+                    .ThrowBallServerRpc(15);
+                // Gives player timePerTurn seconds to throw ball for turn
+                yield return new WaitForSeconds(timePerTurn);
+                // Update scoreboard with number of pins knocked
+                UpdatePlayerScore(player.clientId, pinCount.Value);
+                // Move player out of approach
+                SetPlayerPositionClientRpc(
+                    spawnVector,
+                    new Quaternion(0, 0, 0, 0),
+                    player.clientId,
+                    clientRpcParams
+                );
+                // Reset isTurn so player can move
                 ResetIsTurnForClientServerRpc(player.clientId);
+                // Reset pin count for next player
+                ResetPinCountServerRpc();
             }
         }
         // Reset gameStarted variable
@@ -331,13 +353,30 @@ public class GameManager : NetworkBehaviour
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
     }
 
+    [ServerRpc]
+    public void UpPinCountServerRpc()
+    {
+        pinCount.Value++;
+    }
+
+    [ServerRpc]
+    void ResetPinCountServerRpc()
+    {
+        pinCount.Value = 0;
+    }
+
     [ClientRpc]
-    void SetPlayerPositionClientRpc(ulong clientId, ClientRpcParams clientRpcParams = default)
+    void SetPlayerPositionClientRpc(
+        Vector3 position,
+        Quaternion rotation,
+        ulong clientId,
+        ClientRpcParams clientRpcParams = default
+    )
     {
         NetworkManager.LocalClient.PlayerObject
             .GetComponent<Player>()
             .GetComponent<Transform>()
-            .SetPositionAndRotation(bowlTransform.position, bowlTransform.rotation);
+            .SetPositionAndRotation(position, rotation);
     }
 
     [ServerRpc]
@@ -347,6 +386,7 @@ public class GameManager : NetworkBehaviour
         {
             GameObject pinToSpawn = Instantiate(pinPrefab, pin.position, pin.rotation);
             pinToSpawn.gameObject.GetComponent<NetworkObject>().Spawn(true);
+            pinToSpawn.transform.SetParent(pinHolder);
             pinToSpawn.gameObject.AddComponent<Pin>();
             Destroy(pinToSpawn, timePerTurn);
         }

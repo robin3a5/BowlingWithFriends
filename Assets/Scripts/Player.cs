@@ -14,13 +14,15 @@ public class Player : NetworkBehaviour
     // generic controls
     private Camera _camera;
 
-    public float movementSpeed = 3f;
+    public float movementSpeed = 3.5f;
     public float rotationSpeed = 100f;
 
     private float mouseXPos;
     private float mouseYPos;
 
     private BallSpawner ballSpawner;
+
+    private Vector3 spawnVector = new Vector3(14.21f, 0.97f, -10.9f);
 
     void Start()
     {
@@ -53,10 +55,7 @@ public class Player : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        UpdatePositionOnSpawnServerRpc(
-            new Vector3(14.21f, 0.97f, -10.9f),
-            new Quaternion(0, 0, 0, 0)
-        );
+        UpdatePositionOnSpawnServerRpc(spawnVector, new Quaternion(0, 0, 0, 0));
         _camera = transform.Find("Camera").GetComponent<Camera>();
         _camera.enabled = IsOwner;
         ballSpawner = transform.GetComponent<BallSpawner>();
