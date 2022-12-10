@@ -85,23 +85,31 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!IsOwner || !other.gameObject.CompareTag("Interactable"))
+        if (!IsOwner)
         {
             return;
         }
-        if (IsHost && other.gameObject.layer == 6 && !gameStarted.Value)
+        if (
+            IsHost
+            && other.gameObject.CompareTag("GameStart")
+            && other.gameObject.layer == 6
+            && !gameStarted.Value
+        )
         {
             SetGameStartedServerRpc(true);
             other.gameObject.GetComponent<StartGame>().CallStartGame();
             return;
         }
-        if (hasBall.Value)
+        else if (other.gameObject.CompareTag("Interactable"))
         {
+            if (hasBall.Value)
+            {
+                return;
+            }
+            ballSpawner.SpawnBallServerRpc();
+            SetHasBallServerRpc(true);
             return;
         }
-        ballSpawner.SpawnBallServerRpc();
-        SetHasBallServerRpc(true);
-        return;
     }
 
     void ThrowBall()

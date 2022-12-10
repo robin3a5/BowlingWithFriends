@@ -7,6 +7,7 @@ TagManager:
   - Interactable
   - Scoreboard
   - Pin
+  - GameStart
   layers:
   - Default
   - TransparentFX
