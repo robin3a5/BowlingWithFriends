@@ -232,7 +232,7 @@ public class GameManager : NetworkBehaviour
 
     void OnVoteKickPressed(ulong clientId)
     {
-        InitiateVoteKickServerRpc(clientId, playerPanels.Count);
+        InitiateVoteKickServerRpc(clientId);
     }
 
     void RefreshPlayerPanels()
@@ -342,7 +342,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void InitiateVoteKickServerRpc(ulong clientId, int numPlayers)
+    void InitiateVoteKickServerRpc(ulong clientId)
     {
         InitiateVoteKickClientRpc(clientId, playerPanels.Count);
     }

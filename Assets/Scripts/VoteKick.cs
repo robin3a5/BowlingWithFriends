@@ -102,6 +102,22 @@ public class VoteKick : NetworkBehaviour
         txtVotesNeeded.text = $"{current}/{votesNeeded}";
     }
 
+    [ClientRpc]
+    void NotifyUsersVoteOverClientRpc(bool votePassed)
+    {
+        // TODO: Need way to display this on the UI
+        if (votePassed)
+        {
+            Debug.Log("Player was Kicked");
+        }
+        else
+        {
+            Debug.Log("Vote did not pass");
+        }
+        kickUI.SetActive(false);
+        ResetVotesCastedServerRpc();
+    }
+
     [ServerRpc]
     void BootPlayerServerRpc()
     {
@@ -110,6 +126,12 @@ public class VoteKick : NetworkBehaviour
         // This is a bad way to do this I think since both scripts reference each other but that was the first take on it
         gameManager.OnClientDisconnect(ulong.Parse(txtPlayerToKick.text));
         NotifyUsersVoteOverClientRpc(true);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void ResetVotesCastedServerRpc()
+    {
+        votesCasted.Value = 0;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -128,20 +150,5 @@ public class VoteKick : NetworkBehaviour
         {
             NotifyUsersVoteOverClientRpc(false);
         }
-    }
-
-    [ClientRpc]
-    void NotifyUsersVoteOverClientRpc(bool votePassed)
-    {
-        // Need way to display this on the UI
-        if (votePassed)
-        {
-            Debug.Log("Player was Kicked");
-        }
-        else
-        {
-            Debug.Log("Vote did not pass");
-        }
-        kickUI.SetActive(false);
     }
 }
