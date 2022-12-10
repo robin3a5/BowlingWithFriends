@@ -11,7 +11,7 @@ public class Player : NetworkBehaviour
     public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>(false);
     public NetworkVariable<bool> gameOverShown = new NetworkVariable<bool>(false);
 
-    // generic controls
+    // Generic controls
     private Camera _camera;
 
     public float movementSpeed = 3.5f;

@@ -60,6 +60,7 @@ public class VoteKick : NetworkBehaviour
     {
         voteCasted = false;
         numPlayersInVote = playerCount;
+        // Half the players must vote yes for vote to pass
         votesNeeded = playerCount / 2;
         kickUI.SetActive(true);
         AddListeners();

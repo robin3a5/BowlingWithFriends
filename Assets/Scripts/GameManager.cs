@@ -35,6 +35,7 @@ public class GameManager : NetworkBehaviour
 
     private int timePerTurn = 10;
 
+    // Position on the map I thought made sense to spawn the player at
     private Vector3 spawnVector = new Vector3(14.21f, 0.97f, -10.9f);
 
     public void Awake()
@@ -70,8 +71,9 @@ public class GameManager : NetworkBehaviour
             // For each players
             foreach (PlayerPanelStruct player in playerPanels)
             {
-                // Set their isTurn to true
+                // Set player's isTurn to true
                 SetPlayerIsTurnServerRpc(player.clientId);
+                // Set clientparams for rpc call
                 ClientRpcParams clientRpcParams = new ClientRpcParams
                 {
                     Send = new ClientRpcSendParams
@@ -86,20 +88,21 @@ public class GameManager : NetworkBehaviour
                     player.clientId,
                     clientRpcParams
                 );
-                // spawn their pins
+                // Spawn player pins
                 SpawnPinsServerRpc();
-                // give player a ball
+                // Give player a ball
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
                     .SpawnBallServerRpc();
-                // Throw ball with layer privledge
+                // Give player a second to react
                 yield return new WaitForSeconds(1);
+                // Throw ball with layer privilege
                 NetworkManager.Singleton.ConnectedClients[player.clientId].PlayerObject
                     .GetComponent<BallSpawner>()
                     .ThrowBallServerRpc(15);
-                // Gives player timePerTurn seconds to throw ball for turn
+                // Gives player timePerTurn seconds to get ball down lane
                 yield return new WaitForSeconds(timePerTurn);
-                // Update scoreboard with number of pins knocked
+                // Update scoreboard with number of pins knocked down
                 UpdatePlayerScore(player.clientId, pinCount.Value);
                 // Move player out of approach
                 SetPlayerPositionClientRpc(
@@ -114,27 +117,19 @@ public class GameManager : NetworkBehaviour
                 ResetPinCountServerRpc();
             }
         }
-        // Reset gameStarted variable
+        // Reset gameStarted variable for host (LocalClient in ServerRpc)
         NetworkManager.LocalClient.PlayerObject
             .GetComponent<Player>()
             .SetGameStartedServerRpc(false);
         // Set game over screen
-        yield return GameOver();
+        yield return DisplayGameOver();
     }
 
-    IEnumerator GameOver()
+    IEnumerator DisplayGameOver()
     {
         SetGameOverScreenClientRpc(true);
         yield return new WaitForSeconds(5);
         SetGameOverScreenClientRpc(false);
-    }
-
-    [ClientRpc]
-    void SetGameOverScreenClientRpc(bool option)
-    {
-        NetworkManager.LocalClient.PlayerObject
-            .GetComponent<Player>()
-            .SetGameOverShownServerRpc(option);
     }
 
     public override void OnDestroy()
@@ -332,6 +327,20 @@ public class GameManager : NetworkBehaviour
         UIHolder.StartNewVote(clientId, numPlayers);
     }
 
+    [ClientRpc]
+    void SetGameOverScreenClientRpc(bool option)
+    {
+        NetworkManager.LocalClient.PlayerObject
+            .GetComponent<Player>()
+            .SetGameOverShownServerRpc(option);
+    }
+
+    [ServerRpc]
+    public void UpPinCountServerRpc()
+    {
+        pinCount.Value++;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     void InitiateVoteKickServerRpc(ulong clientId, int numPlayers)
     {
@@ -347,22 +356,16 @@ public class GameManager : NetworkBehaviour
     }
 
     [ServerRpc]
+    void ResetPinCountServerRpc()
+    {
+        pinCount.Value = 0;
+    }
+
+    [ServerRpc]
     void SetPlayerIsTurnServerRpc(ulong clientId)
     {
         NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
-    }
-
-    [ServerRpc]
-    public void UpPinCountServerRpc()
-    {
-        pinCount.Value++;
-    }
-
-    [ServerRpc]
-    void ResetPinCountServerRpc()
-    {
-        pinCount.Value = 0;
     }
 
     [ClientRpc]
