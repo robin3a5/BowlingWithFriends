@@ -479,11 +479,11 @@ GameObject:
   - component: {fileID: 4648089067237356904}
   - component: {fileID: 4648089067237356911}
   - component: {fileID: 4648089067237356910}
-  - component: {fileID: 4648089067237356909}
   - component: {fileID: 3350264623987563584}
   - component: {fileID: 4589338128851405049}
   - component: {fileID: -6582284244190865530}
   - component: {fileID: 4506217785577522667}
+  - component: {fileID: 8504225820799712505}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -499,8 +499,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4648089067237356899}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.0049841, y: 1, z: 0}
+  m_LocalScale: {x: 0.77345, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6907755165645608973}
@@ -563,20 +563,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &4648089067237356909
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4648089067237356899}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3350264623987563584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,7 +642,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballPosition: {fileID: 1853043604167816088}
   bowlingBall: {fileID: 1794495727651543646, guid: bd2b5da138e4a9147b371fa531a8185d, type: 3}
-  throwSpeed: 5
+--- !u!136 &8504225820799712505
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648089067237356899}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5609741158099861506
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,7 +674,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6260853470886534519
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1130,5 +1129,5 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.62
   m_Center: {x: 0, y: 0, z: 0}

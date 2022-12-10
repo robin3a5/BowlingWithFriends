@@ -51,7 +51,7 @@ public class BallSpawner : NetworkBehaviour
             heldBall.velocity = transform.forward * bowlSpeed;
             // Sets ball to game interaction layer
             heldBall.gameObject.layer = 3;
-            Destroy(heldBall.gameObject, 7);
+            Destroy(heldBall.gameObject, 7.5f);
             heldBall = null;
         }
     }
