@@ -105,27 +105,41 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void AddPlayerToList(ulong clientId)
+    public void OnClientDisconnect(ulong clientId)
     {
-        playerPanels.Add(
-            new PlayerPanelStruct(
-                clientId,
-                IsHost && clientId != NetworkManager.Singleton.LocalClientId,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            )
-        );
+        int indexToRemove = -1;
+        for (int i = 0; i < scoreboardPanels.Count; i++)
+        {
+            if (scoreboardPanels[i].GetName() == clientId.ToString())
+            {
+                scoreboardPanels[i].OnVoteKickPlayer -= delegate
+                {
+                    OnVoteKickPressed(clientId);
+                };
+                indexToRemove = i;
+            }
+        }
+        if (indexToRemove != -1)
+        {
+            scoreboardPanels.RemoveAt(indexToRemove);
+        }
+        indexToRemove = -1;
+        for (int i = 0; i < playerPanels.Count; i++)
+        {
+            if (playerPanels[i].clientId == clientId)
+            {
+                indexToRemove = i;
+            }
+        }
+        if (indexToRemove != -1)
+        {
+            playerPanels.RemoveAt(indexToRemove);
+        }
+        // Update player panels on all clients
+        RefreshPlayerPanels();
     }
 
-    private void AddPlayerPanel(PlayerPanelStruct playerPanelStruct)
+    void AddPlayerPanel(PlayerPanelStruct playerPanelStruct)
     {
         ScoreboardPlayerPanel newPanel = Instantiate(playerPanel);
         newPanel.SetName($"{playerPanelStruct.clientId}");
@@ -148,23 +162,24 @@ public class GameManager : NetworkBehaviour
         _scoreBoard.AddPlayerToScoreboard(newPanel);
     }
 
-    void OnVoteKickPressed(ulong clientId)
+    void AddPlayerToList(ulong clientId)
     {
-        InitiateVoteKickServerRpc(clientId, playerPanels.Count);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    void InitiateVoteKickServerRpc(ulong clientId, int numPlayers)
-    {
-        InitiateVoteKickClientRpc(clientId, playerPanels.Count);
-    }
-
-    [ClientRpc]
-    void InitiateVoteKickClientRpc(ulong clientId, int numPlayers)
-    {
-        // Need to disable starting new vote if one is already in progress
-        Debug.Log($"Vote to kick {clientId} started ");
-        UIHolder.StartNewVote(clientId, numPlayers);
+        playerPanels.Add(
+            new PlayerPanelStruct(
+                clientId,
+                IsHost && clientId != NetworkManager.Singleton.LocalClientId,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            )
+        );
     }
 
     void ClientDisconnected(ulong clientId)
@@ -174,14 +189,26 @@ public class GameManager : NetworkBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene("Main_Menu");
     }
 
-    [ServerRpc]
-    public void StartGameServerRpc()
+    void ClientOnAllPlayersChanged(NetworkListEvent<PlayerPanelStruct> changeEvent)
     {
-        // TODO: Blank out scoreboard scores
-        StartCoroutine(GameplayLoop());
+        RefreshPlayerPanels();
     }
 
-    private void UpdatePlayerScore(ulong clientId, int frameScore)
+    void OnVoteKickPressed(ulong clientId)
+    {
+        InitiateVoteKickServerRpc(clientId, playerPanels.Count);
+    }
+
+    void RefreshPlayerPanels()
+    {
+        _scoreBoard.ResetScoreBoard();
+        foreach (PlayerPanelStruct panel in playerPanels)
+        {
+            AddPlayerPanel(panel);
+        }
+    }
+
+    void UpdatePlayerScore(ulong clientId, int frameScore)
     {
         int updateIndex = -1;
         for (int i = 0; i < playerPanels.Count; i++)
@@ -256,8 +283,30 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void InitiateVoteKickClientRpc(ulong clientId, int numPlayers)
+    {
+        // Need to disable starting new vote if one is already in progress
+        Debug.Log($"Vote to kick {clientId} started ");
+        UIHolder.StartNewVote(clientId, numPlayers);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void InitiateVoteKickServerRpc(ulong clientId, int numPlayers)
+    {
+        InitiateVoteKickClientRpc(clientId, playerPanels.Count);
+    }
+
     [ServerRpc]
-    public void SetPlayerForTurnServerRpc(ulong clientId)
+    void ResetIsTurnForClientServerRpc(ulong clientId)
+    {
+        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject
+            .GetComponent<Player>()
+            .isTurn.Value = false;
+    }
+
+    [ServerRpc]
+    void SetPlayerForTurnServerRpc(ulong clientId)
     {
         NetworkClient currentPlayer = NetworkManager.Singleton.ConnectedClients[clientId];
         currentPlayer.PlayerObject.GetComponent<Player>().isTurn.Value = true;
@@ -265,62 +314,6 @@ public class GameManager : NetworkBehaviour
         currentPlayer.PlayerObject
             .GetComponent<Transform>()
             .SetPositionAndRotation(bowlTransform.position, bowlTransform.rotation);
-    }
-
-    [ServerRpc]
-    public void ResetIsTurnForClientServerRpc(ulong clientId)
-    {
-        NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject
-            .GetComponent<Player>()
-            .isTurn.Value = false;
-    }
-
-    public void OnClientDisconnect(ulong clientId)
-    {
-        int indexToRemove = -1;
-        for (int i = 0; i < scoreboardPanels.Count; i++)
-        {
-            if (scoreboardPanels[i].GetName() == clientId.ToString())
-            {
-                scoreboardPanels[i].OnVoteKickPlayer -= delegate
-                {
-                    OnVoteKickPressed(clientId);
-                };
-                indexToRemove = i;
-            }
-        }
-        if (indexToRemove != -1)
-        {
-            scoreboardPanels.RemoveAt(indexToRemove);
-        }
-        indexToRemove = -1;
-        for (int i = 0; i < playerPanels.Count; i++)
-        {
-            if (playerPanels[i].clientId == clientId)
-            {
-                indexToRemove = i;
-            }
-        }
-        if (indexToRemove != -1)
-        {
-            playerPanels.RemoveAt(indexToRemove);
-        }
-        // Update player panels on all clients
-        RefreshPlayerPanels();
-    }
-
-    private void ClientOnAllPlayersChanged(NetworkListEvent<PlayerPanelStruct> changeEvent)
-    {
-        RefreshPlayerPanels();
-    }
-
-    private void RefreshPlayerPanels()
-    {
-        _scoreBoard.ResetScoreBoard();
-        foreach (PlayerPanelStruct panel in playerPanels)
-        {
-            AddPlayerPanel(panel);
-        }
     }
 
     [ServerRpc]
@@ -335,12 +328,10 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    void UpdatePositionOnSpawnServerRpc(Vector3 updatePosition, Quaternion updateRoation)
+    [ServerRpc]
+    public void StartGameServerRpc()
     {
-        Debug.Log(NetworkManager.Singleton.LocalClientId);
-        NetworkManager.Singleton.ConnectedClients[NetworkManager.LocalClientId].PlayerObject
-            .GetComponent<Transform>()
-            .SetPositionAndRotation(updatePosition, updateRoation);
+        // TODO: Blank out scoreboard scores
+        StartCoroutine(GameplayLoop());
     }
 }

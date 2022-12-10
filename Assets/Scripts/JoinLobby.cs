@@ -24,7 +24,23 @@ public class JoinLobby : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnect;
     }
 
-    private void StartClient()
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnect;
+        }
+    }
+
+    void Cancel()
+    {
+        SceneManager.LoadScene("Main_Menu");
+        btnCancel.onClick.RemoveAllListeners();
+        btnConnect.onClick.RemoveAllListeners();
+    }
+
+    void StartClient()
     {
         bool validSettings = ValidateInput();
         if (!validSettings)
@@ -36,7 +52,7 @@ public class JoinLobby : NetworkBehaviour
         txtConnectionMessage.text = "Waiting on Host";
     }
 
-    private void OnDisconnect(ulong clientId)
+    void OnDisconnect(ulong clientId)
     {
         txtConnectionMessage.text = "Failed to connect to server!";
         btnCancel.gameObject.SetActive(true);
@@ -45,14 +61,7 @@ public class JoinLobby : NetworkBehaviour
         portInput.enabled = true;
     }
 
-    void Cancel()
-    {
-        SceneManager.LoadScene("Main_Menu");
-        btnCancel.onClick.RemoveAllListeners();
-        btnConnect.onClick.RemoveAllListeners();
-    }
-
-    private bool ValidateInput()
+    bool ValidateInput()
     {
         IPAddress ip;
         bool isValidIp = IPAddress.TryParse(IPInput.text, out ip);
@@ -76,14 +85,5 @@ public class JoinLobby : NetworkBehaviour
         IPInput.enabled = false;
         portInput.enabled = false;
         return true;
-    }
-
-    public override void OnDestroy()
-    {
-        base.OnDestroy();
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnect;
-        }
     }
 }

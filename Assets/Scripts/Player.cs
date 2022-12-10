@@ -48,12 +48,6 @@ public class Player : NetworkBehaviour
         }
     }
 
-    void ThrowBall()
-    {
-        ballSpawner.ThrowBallFreePlayServerRpc();
-        SetHasBallServerRpc(false);
-    }
-
     public override void OnNetworkSpawn()
     {
         UpdatePositionOnSpawnServerRpc(
@@ -65,7 +59,7 @@ public class Player : NetworkBehaviour
         ballSpawner = transform.GetComponent<BallSpawner>();
     }
 
-    private Vector3[] CalcMovement()
+    Vector3[] CalcMovement()
     {
         // Camera Rotation
         float x_rot = Input.GetAxisRaw("Mouse X") * Time.deltaTime * rotationSpeed;
@@ -106,16 +100,22 @@ public class Player : NetworkBehaviour
         return;
     }
 
-    [ServerRpc]
-    public void SetHasBallServerRpc(bool value)
+    void ThrowBall()
     {
-        hasBall.Value = value;
+        ballSpawner.ThrowBallFreePlayServerRpc();
+        SetHasBallServerRpc(false);
     }
 
     [ServerRpc]
     public void SetGameStartedServerRpc(bool value)
     {
         gameStarted.Value = value;
+    }
+
+    [ServerRpc]
+    void SetHasBallServerRpc(bool value)
+    {
+        hasBall.Value = value;
     }
 
     [ServerRpc(RequireOwnership = false)]

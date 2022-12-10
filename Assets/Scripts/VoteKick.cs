@@ -56,23 +56,6 @@ public class VoteKick : NetworkBehaviour
         yesVotes.OnValueChanged += UpdateVoteText;
     }
 
-    void castVote()
-    {
-        btnVoteYes.onClick.RemoveListener(BtnYesClicked);
-        btnVoteNo.onClick.RemoveListener(BtnNoClicked);
-        btnVoteNo.interactable = false;
-        btnVoteYes.interactable = false;
-        voteCasted = true;
-    }
-
-    void AddListeners()
-    {
-        btnVoteYes.onClick.AddListener(BtnYesClicked);
-        btnVoteNo.onClick.AddListener(BtnNoClicked);
-        btnVoteNo.interactable = true;
-        btnVoteYes.interactable = true;
-    }
-
     public void StartNewVote(ulong playerToKick, int playerCount)
     {
         voteCasted = false;
@@ -82,6 +65,14 @@ public class VoteKick : NetworkBehaviour
         AddListeners();
         txtPlayerToKick.text = playerToKick.ToString();
         txtVotesNeeded.text = $"0/{votesNeeded}";
+    }
+
+    void AddListeners()
+    {
+        btnVoteYes.onClick.AddListener(BtnYesClicked);
+        btnVoteNo.onClick.AddListener(BtnNoClicked);
+        btnVoteNo.interactable = true;
+        btnVoteYes.interactable = true;
     }
 
     void BtnYesClicked()
@@ -94,6 +85,20 @@ public class VoteKick : NetworkBehaviour
     {
         castVote();
         UpdateVoteCountServerRpc(false);
+    }
+
+    void castVote()
+    {
+        btnVoteYes.onClick.RemoveListener(BtnYesClicked);
+        btnVoteNo.onClick.RemoveListener(BtnNoClicked);
+        btnVoteNo.interactable = false;
+        btnVoteYes.interactable = false;
+        voteCasted = true;
+    }
+
+    void UpdateVoteText(int previous, int current)
+    {
+        txtVotesNeeded.text = $"{current}/{votesNeeded}";
     }
 
     [ServerRpc]
@@ -137,10 +142,5 @@ public class VoteKick : NetworkBehaviour
             Debug.Log("Vote did not pass");
         }
         kickUI.SetActive(false);
-    }
-
-    void UpdateVoteText(int previous, int current)
-    {
-        txtVotesNeeded.text = $"{current}/{votesNeeded}";
     }
 }

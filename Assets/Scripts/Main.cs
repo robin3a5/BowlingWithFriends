@@ -17,6 +17,11 @@ public class Main : NetworkBehaviour
         btnQuit.onClick.AddListener(QuitGame);
     }
 
+    void JoinGame()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Join_Menu");
+    }
+
     void StartHost()
     {
         NetworkManager.Singleton.StartHost();
@@ -24,11 +29,6 @@ public class Main : NetworkBehaviour
             "Alley",
             UnityEngine.SceneManagement.LoadSceneMode.Single
         );
-    }
-
-    void JoinGame()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Join_Menu");
     }
 
     void QuitGame()
