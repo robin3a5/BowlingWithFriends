@@ -58,6 +58,7 @@ public class VoteKick : NetworkBehaviour
 
     public void StartNewVote(ulong playerToKick, int playerCount)
     {
+        ResetVotesCastedServerRpc();
         voteCasted = false;
         numPlayersInVote = playerCount;
         // Half the players must vote yes for vote to pass

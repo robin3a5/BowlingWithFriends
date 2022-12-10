@@ -322,7 +322,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     void InitiateVoteKickClientRpc(ulong clientId, int numPlayers)
     {
-        // Need to disable starting new vote if one is already in progress
+        // TODO: Need to disable starting new vote if one is already in progress
         Debug.Log($"Vote to kick {clientId} started ");
         UIHolder.StartNewVote(clientId, numPlayers);
     }
