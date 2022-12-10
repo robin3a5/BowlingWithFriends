@@ -6,16 +6,17 @@ using Unity.Netcode.Components;
 
 public class BallSpawner : NetworkBehaviour
 {
-    public Rigidbody bowlingBall;
-
+    [SerializeField]
+    private Transform ballPosition;
     private Rigidbody heldBall;
+    public Rigidbody bowlingBall;
 
     public int throwSpeed = 5;
 
     [ServerRpc(RequireOwnership = false)]
     public void SpawnBallServerRpc(ServerRpcParams rpcParams = default)
     {
-        heldBall = Instantiate(bowlingBall, transform.position, transform.rotation);
+        heldBall = Instantiate(bowlingBall, ballPosition.position, ballPosition.rotation);
         heldBall.gameObject
             .GetComponent<NetworkObject>()
             .SpawnWithOwnership(rpcParams.Receive.SenderClientId);
